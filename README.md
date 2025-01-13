@@ -9,7 +9,7 @@ This repository contains the implementation of CRP, tested on two datasets from 
 
 ---
 
-![Add your project image or diagram here for better understanding]
+![CRP Architecture](figures/CRP_arc.png)
 
 ---
 
@@ -19,7 +19,7 @@ Follow these steps to set up a Conda environment and install the required depend
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/Cluster-Reduce-Pass/CRP.git
+   git clone https://github.com/yzimmermann/Cluster-Reduce-Pass.git
    cd CRP
    ```
 
