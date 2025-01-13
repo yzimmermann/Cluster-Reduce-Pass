@@ -1,4 +1,4 @@
-# CRP: Cluster, Reduce, Pass - A Novel GNN Architecture for Long-Range Graph Reasoning
+# Cluster-Reduce-Pass (CRP). An Experimental GNN Architecture for Long-Range Graph Reasoning
 
 Graph Neural Networks (GNNs) have emerged as a powerful framework for learning on graph-structured data, achieving remarkable success across domains like molecular property prediction and recommender systems. However, GNNs face challenges such as oversquashing and oversmoothing, which hinder their scalability and effectiveness in large graphs with long-range dependencies.  
 
