@@ -7,7 +7,9 @@ To address these issues, we introduce **Cluster, Reduce, Pass (CRP)**, a novel a
 This repository contains the implementation of CRP, tested on two datasets from the Long Range Graph Benchmark (LRGB). The results are compared with the CNA architecture and state-of-the-art (SOTA) models reported on LRGB datasets.  
 
 ---
+
 <img src="figures/CRP_arc.png" alt="CRP Architecture" width="950" height="300">
+
 ---
 
 ## Creating the Conda Environment
