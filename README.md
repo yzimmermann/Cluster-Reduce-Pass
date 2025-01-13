@@ -8,9 +8,6 @@ This repository contains the implementation of CRP, tested on two datasets from 
 
 ---
 <img src="figures/CRP_arc.png" alt="CRP Architecture" width="950" height="300">
-
-![CRP Architecture](figures/CRP_arc.png)
-
 ---
 
 ## Creating the Conda Environment
