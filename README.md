@@ -1,4 +1,3 @@
-
 # CRP: Cluster, Reduce, Pass - A Novel GNN Architecture for Long-Range Graph Reasoning
 
 Graph Neural Networks (GNNs) have emerged as a powerful framework for learning on graph-structured data, achieving remarkable success across domains like molecular property prediction and recommender systems. However, GNNs face challenges such as oversquashing and oversmoothing, which hinder their scalability and effectiveness in large graphs with long-range dependencies.  
@@ -13,7 +12,7 @@ This repository contains the implementation of CRP, tested on two datasets from 
 
 ---
 
-## Creating the Conda Environment: CRP
+## Creating the Conda Environment
 
 Follow these steps to set up a Conda environment and install the required dependencies for this project:  
 
@@ -42,8 +41,5 @@ Follow these steps to set up a Conda environment and install the required depend
    ```
 
 5. **Run the Code**  
-   Follow the instructions in the repository to run experiments and test the CRP architecture on LRGB datasets.  
+   You can run the main script `cluster_corse_final.py` to analyze the 2 LRGB datasets, Peptides-struct and Peptides-func, with our architecture. Modify the config file to change the parameters of the model.
 
----
-
-Feel free to let me know if you'd like to adjust the text or add more details!
