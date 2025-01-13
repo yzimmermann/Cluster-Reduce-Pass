@@ -234,3 +234,6 @@ def main():
     plt.legend()
     plt.savefig(plot_file_path)
     plt.close()
+
+if __name__ == "__main__":
+    main()
