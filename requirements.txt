@@ -1,0 +1,8 @@
+torch==2.0.1+cu118
+torch-geometric
+scikit-learn
+numpy
+matplotlib
+fast-pytorch-kmeans
+joblib
+torchmetrics
