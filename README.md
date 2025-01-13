@@ -41,5 +41,5 @@ Follow these steps to set up a Conda environment and install the required depend
    ```
 
 5. **Run the Code**  
-   You can run the main script `cluster_corse_final.py` to analyze the 2 LRGB datasets, Peptides-struct and Peptides-func, with our architecture. Modify the config file to change the parameters of the model. You can run only one data set at a time.
+   You can run the main script `cluster_coarse_final.py` to analyze the 2 LRGB datasets, Peptides-struct and Peptides-func, with our architecture. Modify the config file to change the parameters of the model. You can run only one data set at a time.
 
