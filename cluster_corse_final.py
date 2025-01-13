@@ -33,6 +33,11 @@ pos_encoding_type = 'LAPE' # can be LAPE or RWPE
 k = 4 # number of eigenvectors
 walk_length = 25 # walking length needed for RWPE
 
+#Coarsening param
+coarsen_graph = 'yes' #either 'yes' or 'no', anything that is not a 'yes' will be treated as a 'no'
+num_layers_before = 2 #num layers of GCN before clustering and coarsening
+num_layers_after = 3 #num layers of GCN after clustering and coarsening 
+
 if pos_encoding:
     if pos_encoding_type == 'LAPE':
         tranformer = AddLaplacianEigenvectorPE(k=k,attr_name=None)
@@ -301,19 +306,20 @@ class GCNWithCoarsening(torch.nn.Module):
             in_channels=in_channels,
             hidden_channels=hidden_channels,
             out_channels=hidden_channels,
-            num_layers=2,
+            num_layers=num_layers_before,
             act='gelu',
             dropout=0.1,
             norm='batch',
             norm_kwargs={'track_running_stats': False}
         )
-        self.clustering = Clustering(clustering_type=clustering_type, n_clusters=n_clusters)
-        self.coarsen_projection = torch.nn.Linear(hidden_channels, hidden_channels)
+        if coarsen_graph == 'yes':
+            self.clustering = Clustering(clustering_type=clustering_type, n_clusters=n_clusters)
+            self.coarsen_projection = torch.nn.Linear(hidden_channels, hidden_channels)
         self.gcn_post_coarsen = GCN(
             in_channels=hidden_channels,
             hidden_channels=hidden_channels,
             out_channels=hidden_channels,
-            num_layers=3,
+            num_layers=num_layers_after,
             act='gelu',
             dropout=0.1,
             norm='batch',
@@ -334,11 +340,13 @@ class GCNWithCoarsening(torch.nn.Module):
         x, edge_index, batch = data.x, data.edge_index, data.batch
         x = x.float()
         x = self.gcn_conv_layers(x=x, edge_index=edge_index)
-
-        cluster = self.clustering.fit(x, batch)
-        coarsened_data = coarsen_graph(cluster, Data(x=x, edge_index=edge_index, batch=batch), reduce='mean') # by setting reduce ='sample' we perfomr sampling of a super node instead of using mean (default)
-        coarsened_data.x = self.coarsen_projection(coarsened_data.x)
-        x = self.gcn_post_coarsen(coarsened_data.x, coarsened_data.edge_index)
+        if coarsen_graph == 'yes':
+            cluster = self.clustering.fit(x, batch)
+            coarsened_data = coarsen_graph(cluster, Data(x=x, edge_index=edge_index, batch=batch), reduce='mean') # by setting reduce ='sample' we perfomr sampling of a super node instead of using mean (default)
+            coarsened_data.x = self.coarsen_projection(coarsened_data.x)
+            x = self.gcn_post_coarsen(coarsened_data.x, coarsened_data.edge_index)
+        else:
+            x = self.gcn_post_coarsen(x=x, edge_index=edge_index)
 
         return self.head(x, coarsened_data.batch)
 
