@@ -62,7 +62,7 @@ test_dataset = LRGBDataset(
     transform=FloatTransform()
 )
 
-# Print dataset sizes for verification
+# Print dataset sizes
 print(f"Dataset name: {dataset_name}")
 print(f"Number of training graphs: {len(train_dataset)}")
 print(f"Number of validation graphs: {len(val_dataset)}")
@@ -128,7 +128,6 @@ def multilabel_weighted_bce_loss(output, target, weights=None):
         weights (Tensor, optional): Per-class weight.
     """
     if weights is None:
-        # Default: compute class frequencies and invert
         pos_freq = target.float().mean(dim=0)
         weights = 1.0 / (pos_freq + 1e-8)
 
@@ -269,14 +268,9 @@ class Net(torch.nn.Module):
 # For reproducibility
 torch.manual_seed(8)
 
-# DataLoaders with pinned memory for faster GPU transfers (if CUDA is available)
-common_loader_args = {
-    'pin_memory': (device.type == 'cuda'),
-}
-
-train_loader = DataLoader(train_dataset, batch_size=200, shuffle=True, **common_loader_args)
-val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, **common_loader_args)
-test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, **common_loader_args)
+train_loader = DataLoader(train_dataset, batch_size=200, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False)
+test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
 #################################################################
 #                        Activation Setup
@@ -363,11 +357,10 @@ def train_and_evaluate(model, train_loader, val_loader, test_loader,
         model.train()
         total_loss = 0.0
         for batch in train_loader:
-            batch = batch.to(device)  # Moves data (x, y, edge_index, etc.) to GPU if available
+            batch = batch.to(device)
             optimizer.zero_grad()
 
             out = model(batch.x, batch.edge_index, batch.batch)
-            # For Peptides-func, y is multi-label, so ensure float. For regression, also float by default now.
             loss = criterion(out, batch.y)
             loss.backward()
             optimizer.step()
@@ -388,7 +381,6 @@ def train_and_evaluate(model, train_loader, val_loader, test_loader,
                     eval_loss = criterion(out, b.y)
                     total_eval_loss += eval_loss.item()
 
-                    # For multi-label classification
                     if is_peptides_func:
                         preds = torch.sigmoid(out).cpu()
                     else:
@@ -427,11 +419,10 @@ def train_and_evaluate(model, train_loader, val_loader, test_loader,
         all_val_metrics.append(val_metrics)
         all_test_metrics.append(test_metrics)
 
-        # Scheduler step. For "Peptides-func", we step on val loss; otherwise, step on val MAE.
         if is_peptides_func:
-            scheduler.step(val_metrics)  # val_metrics is AP, so we want to maximize
+            scheduler.step(val_metrics)
         else:
-            scheduler.step(val_metrics[0])  # val_metrics[0] is the MAE, but we have scheduler mode='max'.
+            scheduler.step(val_metrics[0])
 
         # ------------------- Logging ------------------------
         print(f"Epoch {epoch + 1}/{num_epochs}:")
