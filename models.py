@@ -130,7 +130,7 @@ class Clustering:
 
 
 class GCNWithCoarsening(torch.nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, in_channels, cfg):
         """
         Initialize a GCN model with graph coarsening.
 
@@ -143,10 +143,10 @@ class GCNWithCoarsening(torch.nn.Module):
         """
         super().__init__()
         self.gcn_conv_layers = GCN(
-            in_channels=cfg["model"]["in_channels"],
+            in_channels=in_channels,
             hidden_channels=cfg["model"]["hidden_channels"],
             out_channels=cfg["model"]["hidden_channels"],
-            num_layers=cfg["model"]["num_layers_before"],
+            num_layers=cfg["coarsening"]["num_layers_before"],
             act=cfg["model"]["act"],
             dropout=cfg["model"]["dropout"],
             norm=cfg["model"]["norm"],
@@ -154,9 +154,9 @@ class GCNWithCoarsening(torch.nn.Module):
         )
         
         self.clustering = Clustering(cfg=cfg)
-        self.coarsen_projection = torch.nn.Linear(hidden_channels=cfg["model"]["hidden_channels"], hidden_channels=cfg["model"]["hidden_channels"])
+        self.coarsen_projection = torch.nn.Linear(cfg["model"]["hidden_channels"], cfg["model"]["hidden_channels"])
         self.gcn_post_coarsen = GCN(
-            in_channels=cfg["model"]["in_channels"],
+            in_channels=in_channels,
             hidden_channels=cfg["model"]["hidden_channels"],
             out_channels=cfg["model"]["hidden_channels"],
             num_layers=cfg["coarsening"]["num_layers_after"],

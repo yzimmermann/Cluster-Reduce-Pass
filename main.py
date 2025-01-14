@@ -56,7 +56,7 @@ def load_dataset(cfg):
     return dataset, train_dataset, val_dataset, test_dataset
 
 
-def get_data_loader(device, train_dataset, val_dataset, test_dataset):
+def get_data_loader(train_dataset, val_dataset, test_dataset):
     if device == 'cuda':
         train_loader = DataLoader(train_dataset, batch_size=200, shuffle=True, pin_memory=True,num_workers=2)
         val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False, pin_memory=True,num_workers=2)
@@ -90,7 +90,7 @@ def cosine_with_warmup(epoch, warmup_epochs, total_epochs):
         return 0.5 * (1 + np.cos(np.pi * progress))
     
 
-def train(train_loader, model, device, optimizer, criterion, scheduler):
+def train(model, train_loader, optimizer, criterion, scheduler):
     model.train()
     total_loss = 0
     for data in train_loader:
@@ -107,7 +107,7 @@ def train(train_loader, model, device, optimizer, criterion, scheduler):
     return total_loss / len(train_loader)
 
 
-def test(model, loader, device, criterion, dataset_name, AP=None):
+def test(model, loader, criterion, dataset_name, AP=None):
     model.eval()
     all_preds = []
     all_labels = []
@@ -149,7 +149,7 @@ def main():
     args = parser.parse_args()
 
     # Load config
-    cfg = load_config(args.cfg)
+    cfg = load_config(config_path = os.path.join(os.path.dirname(__file__), args.cfg))
     warmup_epochs = cfg["training"]["warmup_epochs"]
     total_epochs = cfg["training"]["total_epochs"]
 
@@ -161,7 +161,6 @@ def main():
     # Initialize the model
     if cfg["training"]["coarsening"]:
         model = GCNWithCoarsening(in_channels=dataset.num_features,
-                                  out_channels=dataset.num_classes,
                                   cfg=cfg).to(device)
     else:
         model = newGCN(in_channels=dataset.num_features,
@@ -176,13 +175,14 @@ def main():
 
     # Define the loss criterion
     criterion = get_loss_criterion(dataset_name=dataset_name)
+
+    # Prepare data loaders
+    train_loader, val_loader, test_loader = get_data_loader(train_dataset, val_dataset, test_dataset)
+
     if dataset_name == 'Peptides-func':
         AP = MultilabelAveragePrecision(num_labels=train_loader.dataset.num_classes, average='macro')
     else:
         AP = None
-
-    # Prepare data loaders
-    train_loader, val_loader, test_loader = get_data_loader(device, train_dataset, val_dataset, test_dataset)
 
     # Training Loop
     seed = cfg["training"]["seed"]
@@ -199,11 +199,11 @@ def main():
         first_sota_gcn_value = 0.3496 #SOTA in LRGB paper
     
     for epoch in range(1, total_epochs + 1):
-        loss = train(model, train_loader, device, optimizer, criterion, scheduler)
+        loss = train(model, train_loader, optimizer, criterion, scheduler)
         if dataset_name =='Peptides-func':
-            val_ap = test(val_loader, device, criterion, dataset_name, AP)
-            test_ap = test(test_loader, device, criterion, dataset_name, AP)
-            train_ap= test(train_loader, device, criterion, dataset_name, AP)
+            val_ap = test(val_loader, criterion, dataset_name, AP)
+            test_ap = test(test_loader, criterion, dataset_name, AP)
+            train_ap= test(train_loader, criterion, dataset_name, AP)
             log_entry = {
                 'epoch': int(epoch),
                 'loss': float(loss),
@@ -214,9 +214,9 @@ def main():
             logs.append(log_entry)
             print(f"Seed {seed}, Epoch {epoch:03d}, Loss: {loss:.4f}, Val AP: {val_ap:.4f}, Test AP: {test_ap:.4f}")
         else:
-            val_mae, val_r2, val_loss = test(val_loader, device, criterion, dataset_name, AP)
-            test_mae, test_r2, _ = test(test_loader, device, criterion, dataset_name, AP)
-            train_mae, train_r2, _ = test(train_loader, device, criterion, dataset_name, AP)
+            val_mae, val_r2, val_loss = test(val_loader, criterion, dataset_name, AP)
+            test_mae, test_r2, _ = test(test_loader, criterion, dataset_name, AP)
+            train_mae, train_r2, _ = test(train_loader, criterion, dataset_name, AP)
             log_entry = {
                 'epoch': int(epoch),
                 'loss': float(loss),
