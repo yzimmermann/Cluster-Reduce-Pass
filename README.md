@@ -4,7 +4,7 @@ Graph neural networks (GNNs) have achieved remarkable success with learning task
 
 ---
 
-<img src="figures/CSP_arc.png" alt="CSP Architecture" width="950" height="300">
+<img src="figures/CSP_arc_1.png" alt="CSP Architecture" width="950" height="300">
 
 ---
 
