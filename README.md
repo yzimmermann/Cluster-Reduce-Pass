@@ -14,7 +14,7 @@ Follow these steps to set up a Conda environment and install the required depend
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/yzimmermann/Cluster-Reduce-Pass.git
+   git clone https://github.com/yzimmermann/Cluster-Sample-Pass.git
    cd CSP
    ```
 
@@ -51,4 +51,4 @@ Follow these steps to set up a Conda environment and install the required depend
    Note: You can run only one data set at a time.
 
 6. **CNA Comparison:**
-   To run the CNA comparison have a look at the README: https://github.com/yzimmermann/Cluster-Reduce-Pass/blob/main/CNA_comparison/README.md
+   To run the CNA comparison have a look at the README: https://github.com/yzimmermann/Cluster-Sample-Pass/blob/main/CNA_comparison/README.md
