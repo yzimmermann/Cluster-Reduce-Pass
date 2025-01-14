@@ -37,6 +37,7 @@ def coarsen_graph_proportional(cluster: torch.Tensor, data: Data, sampling_ratio
         # Get nodes in this cluster
         cluster_mask = perm == cluster_id
         cluster_indices = torch.nonzero(cluster_mask, as_tuple=True)[0]
+        cluster_features = data.x[cluster_indices]
 
         # Calculate number of samples for this cluster
         cluster_size = len(cluster_indices)
@@ -48,9 +49,9 @@ def coarsen_graph_proportional(cluster: torch.Tensor, data: Data, sampling_ratio
             # Take all nodes if we want more samples than available
             sampled_idx = cluster_indices
         else:
-            # Random sampling without replacement
-            perm_indices = torch.randperm(cluster_size, device=device)[:num_samples]
-            sampled_idx = cluster_indices[perm_indices]
+            # Multinomial sampling without replacement
+            weights = torch.norm(cluster_features, dim =1)
+            sampled_idx = cluster_indices[torch.multinomial(weights,num_samples,replacement = False)]
 
         sampled_indices.append(sampled_idx)
 

@@ -14,6 +14,8 @@ from torch_geometric.datasets import LRGBDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.transforms import AddLaplacianEigenvectorPE, AddRandomWalkPE
 
+from models import GCNWithCoarsening, newGCN
+
 
 # Set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -146,23 +148,20 @@ def main():
     dataset_sp = dataset_name.split('-')[1]
 
     # Initialize the model
-    if coarsening:
+    if cfg["training"]["coarsening"]:
         model = GCNWithCoarsening(in_channels=dataset.num_features,
-                                hidden_channels=235,
-                                out_channels=dataset.num_classes,
-                                n_clusters=22,
-                                coarsening=cfg["training"]["coarsening"],
-                                clustering_type='KMeans').to(device)
+                                  out_channels=dataset.num_classes,
+                                  cfg=cfg).to(device)
     else:
-        model = newGCN()
+        model = newGCN(in_channels=dataset.num_features,
+                       cfg=cfg).to(device)
 
     print(model)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg["model"]["lr"])
     scheduler = LambdaLR(
         optimizer, 
         lr_lambda=lambda epoch: cosine_with_warmup(epoch, warmup_epochs, total_epochs)
     )
-
 
     # Define the loss criterion
     criterion = get_loss_criterion(dataset_name=dataset_name)
@@ -197,7 +196,8 @@ def main():
                 'epoch': int(epoch),
                 'loss': float(loss),
                 'val_metric': float(val_ap),
-                'test_metric': float(test_ap)
+                'test_metric': float(test_ap),
+                'train_metric': float(train_ap)
             }
             logs.append(log_entry)
             print(f"Seed {seed}, Epoch {epoch:03d}, Loss: {loss:.4f}, Val AP: {val_ap:.4f}, Test AP: {test_ap:.4f}")
@@ -210,8 +210,11 @@ def main():
                 'loss': float(loss),
                 'val_metric': float(val_mae),
                 'val_r2': float(val_r2),
+                'val_loss': float(val_loss),
                 'test_metric': float(test_mae),
-                'test_r2': float(test_r2)
+                'test_r2': float(test_r2),
+                'train_metric': float(train_mae),
+                'train_r2': float(train_r2)
             }
             logs.append(log_entry)
             print(f"Seed {seed}, Epoch {epoch:03d}, Loss: {loss:.4f}, Val MAE: {val_mae:.4f}, Val R2: {val_r2:.4f}, Test MAE: {test_mae:.4f}, Test R2: {test_r2:.4f}")
