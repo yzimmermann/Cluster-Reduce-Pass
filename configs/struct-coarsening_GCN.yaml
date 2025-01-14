@@ -1,6 +1,6 @@
 dataset:
   name: Peptides-struct
-  encoding: False
+  pos_encoding: False
 pos_encoding:
   type: LAPE
   num_eigenvectors: 3
@@ -9,12 +9,17 @@ training:
   total_epochs: 250
   warmup_epochs: 5
   coarsening: True
+  log_directory: ./training_logs
 model:
   hidden_channels: 235
+  out_channels: 11
   act: gelu
   dropout: 0.1
   norm: batch
   lr: 0.001
+mlp:
+  dropout: 0.1
+  L: 3
 coarsening:
   num_layers_before: 2
   num_layers_after: 3

@@ -1,6 +1,6 @@
 dataset:
   name: Peptides-func
-  encoding: False
+  pos_encoding: False
 pos_encoding:
   type: RWPE
   walk_length: 21
@@ -9,6 +9,7 @@ training:
   total_epochs: 250
   warmup_epochs: 5
   coarsening: False
+  log_directory: ./training_logs
 model:
   hidden_channels: 235
   out_channels: 10
