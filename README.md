@@ -54,5 +54,5 @@ Follow these steps to set up a Conda environment and install the required depend
    
    Note: You can run only one data set at a time.
 
-6. **CNA Comparison**
-   To run the CNA comparison have a look at the README: https://github.com/yzimmermann/Cluster-Reduce-Pass/tree/main/CNA_comparison
+6. **CNA Comparison:**
+   To run the CNA comparison have a look at the README: https://github.com/yzimmermann/Cluster-Reduce-Pass/blob/main/CNA_comparison/README.md
