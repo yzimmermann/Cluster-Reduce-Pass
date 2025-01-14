@@ -1,0 +1,25 @@
+dataset:
+  name: Peptides-func
+  encoding: False
+pos_encoding:
+  type: RWPE
+  num_eigenvectors: 21
+training:
+  seed: 42
+  total_epochs: 250
+  warmup_epochs: 5
+  coarsening: True
+model:
+  hidden_channels: 235
+  act: gelu
+  dropout: 0.1
+  norm: batch
+  lr: 0.001
+coarsening:
+  num_layers_before: 2
+  num_layers_after: 3
+  reduce: mean #Options: max, min, sum, mul, sample
+clustering:
+  clustering_type: KMeans
+  n_clusters: 22
+  random_state: 0
