@@ -43,8 +43,8 @@ Follow these steps to set up a Conda environment and install the required depend
 5. **Run the Code**  
    You can run any of the experiments mentioned in the paper by running the `main.py` file and referencing the desired config file. 
    - **The Config Files**
-      `struct-GCN.yaml` and `func-GCN.yaml` contain the configs for reproducing the SOTA results for the Peptides-struct and Petides-func datasets. Positional encoding can be added by setting `encoding: True`, default is False.
-      `struct-coarsening-GCN.yaml` and `func-coarsening-GCN.yaml` contain the configs for our newly proposed architecture.
+      - `struct-GCN.yaml` and `func-GCN.yaml` contain the configs for reproducing the SOTA results for the Peptides-struct and Petides-func datasets. Positional encoding can be added by setting `encoding: True`, default is False.
+      - `struct-coarsening-GCN.yaml` and `func-coarsening-GCN.yaml` contain the configs for our newly proposed architecture.
       Modify the config file to change the parameters of the model. 
 
    - **Running the Code**
