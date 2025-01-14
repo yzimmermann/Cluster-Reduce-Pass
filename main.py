@@ -23,6 +23,17 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def load_config(config_path):
     with open(config_path, "r") as file:
         return yaml.safe_load(file)
+        
+def set_seed(seed: int):
+    # Set the seed for NumPy
+    np.random.seed(seed)
+    # Set the seed for PyTorch (CPU and GPU)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # If using multiple GPUs
+    # Ensure deterministic behavior in PyTorch
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
     
 
 def load_dataset(cfg):
@@ -175,6 +186,7 @@ def main():
 
     # Training Loop
     seed = cfg["training"]["seed"]
+    set_seed(seed)
     log_directory = cfg["training"]["log_directory"]
     os.makedirs(log_directory, exist_ok=True)
     logs = []
