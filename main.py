@@ -161,9 +161,11 @@ def main():
     # Initialize the model
     if cfg["training"]["coarsening"]:
         model = GCNWithCoarsening(in_channels=dataset.num_features,
+                                  out_channels=dataset.num_classes,
                                   cfg=cfg).to(device)
     else:
         model = newGCN(in_channels=dataset.num_features,
+                       out_channels=dataset.num_classes,
                        cfg=cfg).to(device)
 
     print(model)
@@ -201,9 +203,9 @@ def main():
     for epoch in range(1, total_epochs + 1):
         loss = train(model, train_loader, optimizer, criterion, scheduler)
         if dataset_name =='Peptides-func':
-            val_ap = test(val_loader, criterion, dataset_name, AP)
-            test_ap = test(test_loader, criterion, dataset_name, AP)
-            train_ap= test(train_loader, criterion, dataset_name, AP)
+            val_ap = test(model, val_loader, criterion, dataset_name, AP)
+            test_ap = test(model, test_loader, criterion, dataset_name, AP)
+            train_ap= test(model, train_loader, criterion, dataset_name, AP)
             log_entry = {
                 'epoch': int(epoch),
                 'loss': float(loss),
@@ -214,9 +216,9 @@ def main():
             logs.append(log_entry)
             print(f"Seed {seed}, Epoch {epoch:03d}, Loss: {loss:.4f}, Val AP: {val_ap:.4f}, Test AP: {test_ap:.4f}")
         else:
-            val_mae, val_r2, val_loss = test(val_loader, criterion, dataset_name, AP)
-            test_mae, test_r2, _ = test(test_loader, criterion, dataset_name, AP)
-            train_mae, train_r2, _ = test(train_loader, criterion, dataset_name, AP)
+            val_mae, val_r2, val_loss = test(model, val_loader, criterion, dataset_name, AP)
+            test_mae, test_r2, _ = test(model, test_loader, criterion, dataset_name, AP)
+            train_mae, train_r2, _ = test(model, train_loader, criterion, dataset_name, AP)
             log_entry = {
                 'epoch': int(epoch),
                 'loss': float(loss),

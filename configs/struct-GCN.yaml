@@ -12,7 +12,6 @@ training:
   log_directory: ./training_logs
 model:
   hidden_channels: 235
-  out_channels: 11 # number of regression tasks
   num_layers: 6
   act: gelu
   dropout: 0.1

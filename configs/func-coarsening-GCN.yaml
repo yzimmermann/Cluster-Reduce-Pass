@@ -12,7 +12,6 @@ training:
   log_directory: ./training_logs
 model:
   hidden_channels: 235
-  out_channels: 10
   act: gelu
   dropout: 0.1
   norm: batch
@@ -23,7 +22,7 @@ mlp:
 coarsening:
   num_layers_before: 2
   num_layers_after: 3
-  reduce: mean #Options: max, min, sum, mul, sample
+  reduce: sample #Options: max, min, sum, mul, sample
 clustering:
   clustering_type: KMeans
   n_clusters: 22

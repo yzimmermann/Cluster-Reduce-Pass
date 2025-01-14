@@ -11,7 +11,7 @@ from coarsening import coarsen_graph
 
 
 class MLPGraphHead(torch.nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, out_channels, cfg):
         """
         Initialize an MLP-based graph prediction head.
 
@@ -24,7 +24,6 @@ class MLPGraphHead(torch.nn.Module):
         dropout = cfg["mlp"]["dropout"]
         L = cfg["mlp"]["L"]
         hidden_channels = cfg["model"]["hidden_channels"]
-        out_channels = cfg["model"]["out_channels"]
 
         layers = []
         for _ in range(L - 1):
@@ -51,7 +50,7 @@ class MLPGraphHead(torch.nn.Module):
 
 
 class newGCN(torch.nn.Module):
-    def __init__(self, in_channels, cfg):
+    def __init__(self, in_channels, out_channels, cfg):
         super(newGCN, self).__init__()
 
         # Define GCN layers with edge attributes
@@ -67,11 +66,14 @@ class newGCN(torch.nn.Module):
         )
 
         # Replace the prediction head with MLPGraphHead
-        self.head = MLPGraphHead(cfg)
+        self.head = MLPGraphHead(out_channels, cfg)
 
-    def forward(self, x, edge_index, edge_attr=None, batch=None):
+    def forward(self, data):
+        x, edge_index, batch = data.x, data.edge_index, data.batch
+        x = x.float()
+
         # Apply GCN layers with edge attributes
-        x = self.gcn(x=x, edge_index=edge_index, edge_attr=edge_attr)
+        x = self.gcn(x=x, edge_index=edge_index)
         return self.head(x, batch)
 
 
@@ -130,7 +132,7 @@ class Clustering:
 
 
 class GCNWithCoarsening(torch.nn.Module):
-    def __init__(self, in_channels, cfg):
+    def __init__(self, in_channels, out_channels, cfg):
         """
         Initialize a GCN model with graph coarsening.
 
@@ -156,7 +158,7 @@ class GCNWithCoarsening(torch.nn.Module):
         self.clustering = Clustering(cfg=cfg)
         self.coarsen_projection = torch.nn.Linear(cfg["model"]["hidden_channels"], cfg["model"]["hidden_channels"])
         self.gcn_post_coarsen = GCN(
-            in_channels=in_channels,
+            in_channels=cfg["model"]["hidden_channels"],
             hidden_channels=cfg["model"]["hidden_channels"],
             out_channels=cfg["model"]["hidden_channels"],
             num_layers=cfg["coarsening"]["num_layers_after"],
@@ -165,7 +167,7 @@ class GCNWithCoarsening(torch.nn.Module):
             norm=cfg["model"]["norm"],
             norm_kwargs={'track_running_stats': False}
         )
-        self.head = MLPGraphHead(cfg=cfg)
+        self.head = MLPGraphHead(out_channels, cfg)
 
     def forward(self, data):
         """
@@ -184,6 +186,6 @@ class GCNWithCoarsening(torch.nn.Module):
         cluster = self.clustering.fit(x, batch)
         coarsened_data = coarsen_graph(cluster, Data(x=x, edge_index=edge_index, batch=batch), reduce='mean') # by setting reduce ='sample' we perfomr sampling of a super node instead of using mean (default)
         coarsened_data.x = self.coarsen_projection(coarsened_data.x)
-        x = self.gcn_post_coarsen(coarsened_data.x, coarsened_data.edge_index)
+        x = self.gcn_post_coarsen(x=coarsened_data.x, edge_index=coarsened_data.edge_index)
 
         return self.head(x, coarsened_data.batch)
