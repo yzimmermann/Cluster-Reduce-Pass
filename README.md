@@ -1,10 +1,6 @@
 # Cluster-Sample-Pass (CSP). An Experimental GNN Architecture for Long-Range Graph Reasoning
 
-Graph Neural Networks (GNNs) have emerged as a powerful framework for learning graph-structured data, achieving remarkable success across domains like molecular property prediction and recommender systems. However, GNNs face challenges such as oversquashing and oversmoothing, which hinder their scalability and effectiveness in large graphs with long-range dependencies.  
-
-To address these issues, we introduce **Cluster, Sample, Pass (CSP)**, a novel architecture that builds on existing clustering and graph coarsening techniques. CSP leverages clustering algorithms (e.g., KMeans, GMM) to group similar nodes into clusters, reducing graph complexity while preserving long-range dependencies. By iteratively applying coarsening and message-passing, CRP mitigates oversquashing and oversmoothing, offering an efficient and scalable solution for large-scale graphs.  
-
-This repository contains the implementation of CSP, tested on two datasets from the Long Range Graph Benchmark (LRGB). The results are compared with the CNA architecture and state-of-the-art (SOTA) models reported on LRGB datasets.  
+Graph neural networks (GNNs) have achieved remarkable success with learning tasks on graph-structured data, yet challenges like oversquashing and oversmoothing limit their scalability to large graphs with long-range dependencies. This paper evaluates the Cluster Normalize Activate (CNA) architecture, designed to mitigate these issues, on the Long-Range Graph Benchmark (LRGB) datasets. Building on the results, we propose a novel architecture, Cluster Sample Pass (CSP), which integrates clustering, pooling, and probabilistic sampling to simplify graph structure while preserving critical information. CSP coarsens graphs by grouping nodes into clusters and sampling nodes from each cluster while retaining intra-cluster diversity. Subsequent GNN layers operate on the reduced graph, enabling scalable long-range dependency modeling. Experiments demonstrate that CSP improves computational efficiency and maintains competitive predictive performance, showing promise for addressing the limitations of current GNN architectures on complex graph tasks.\footnote{The source code is available under 
 
 ---
 
