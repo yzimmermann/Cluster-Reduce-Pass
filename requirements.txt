@@ -6,3 +6,4 @@ matplotlib
 fast-pytorch-kmeans
 joblib
 torchmetrics
+pyyaml
